@@ -1,0 +1,22 @@
+:root {
+	--fg-color: #000;
+	--bg-color: #fff;
+	--comfy-menu-bg: #353535;
+	--comfy-input-bg: #222;
+	--input-text: #ddd;
+	--descrip-text: #999;
+	--drag-text: #ccc;
+	--error-text: #ff4444;
+	--border-color: #4e4e4e;
+	--tr-even-bg-color: #222;
+	--tr-odd-bg-color: #353535;
+}
+
+body {
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+	overflow: hidden;
+	background-color: var(--bg-color);
+	color: var(--fg-color);
+}
