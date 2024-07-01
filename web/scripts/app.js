@@ -28,6 +28,10 @@ export class VTON {
 
 		api.addEventListener("executed", ({ detail }) => {
 			console.log("executed: ", detail)
+			if (detail.node === "11") {
+				document.getElementById("img_final").src = api.apiURL(`/view?filename=${detail.output.images[0].filename}&subfolder=${detail.output.images[0].subfolder}&type=${detail.output.images[0].type}`);
+			}
+			window.generating = false;
 		});
 
 		api.addEventListener("execution_start", ({ detail }) => {

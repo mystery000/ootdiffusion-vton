@@ -6,11 +6,54 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 		<link rel="stylesheet" type="text/css" href="/web/style.css" />
 		<script type="module">
+			import { api } from "/web/scripts/api.js";
 			import { app } from "/web/scripts/app.js";
 			await app.setup();
+
+			document.getElementById("btn_generate").addEventListener('click', () => {
+				api.queuePrompt();
+			})
+
+			const modelInput = document.getElementById("input_model");
+			modelInput.addEventListener('change', async (event) => {
+				const file = event.target.files[0];
+				try {
+					const uploadedFilePath = await api.uploadFile(file, "model");
+					const previewUrl = URL.createObjectURL(file);
+					document.getElementById("img_model").src = previewUrl;
+				} catch (error) {
+					console.error('Error uploading file:', error);
+				}
+			});
+			const clothesInput = document.getElementById("input_clothes");
+			clothesInput.addEventListener('change', async (event) => {
+				const file = event.target.files[0];
+				try {
+					const uploadedFilePath = await api.uploadFile(file, "clothes");
+					const previewUrl = URL.createObjectURL(file);
+					document.getElementById("img_clothes").src = previewUrl;
+				} catch (error) {
+					console.error('Error uploading file:', error);
+				}
+			});
 		</script>
 	</head>
 	<body>
-		This is web interface of VTON
+		<div class="vton_container">
+			<input type="file" id="input_model"/>
+			<div style="text-align: center;">
+				<img id="img_model" style="border: 1px solid black; width: 320px; height: 300px; object-fit: contain;"/>
+			</div>
+			<div style="text-align: center;">
+				<img id="img_clothes" style="border: 1px solid black; width: 320px; height: 300px; object-fit: contain;"/>
+			</div>
+			<input type="file" id="input_clothes"/>
+		</div>
+		<div style="text-align: center; margin-top: 24px;">
+			<button style="padding: 12px 24px;" id="btn_generate">Generate</button>
+		</div>
+		<div style="text-align: center; margin-top: 24px;">
+			<img id="img_final" style="border: 1px solid black; width: 720px; height: 468px; object-fit: contain;">
+		</div>
 	</body>
 </html>

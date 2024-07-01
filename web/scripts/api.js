@@ -3,8 +3,7 @@ class VtonApi extends EventTarget {
 
     constructor() {
         super();
-		this.api_base = "wxs9ynur9uqr72-8188.proxy.runpod.net";
-        this.cookie = "ai_dock_token=dXNlcjpwYXNzd29yZA==";
+		this.api_base = "9qpg1kcavbsyx5-3000.proxy.runpod.net";
 		this.initialClientId = sessionStorage.getItem("clientId");
     }
 
@@ -19,8 +18,6 @@ class VtonApi extends EventTarget {
         if(!options.headers) {
             options.headers = {};
         }
-        options.headers["Comfy-User"] = this.user;
-        options.headers["Cookie"] = this.cookie;
         return fetch(this.apiURL(route), options);
     }
     
@@ -57,13 +54,7 @@ class VtonApi extends EventTarget {
 		if (existingSession) {
 			existingSession = "?clientId=" + existingSession;
 		}
-		this.socket = new WebSocket(
-			`wss://${this.api_base}/ws${existingSession}`, 
-			null, 
-			{
-				"Cookie": this.cookie,
-			}
-		);
+		this.socket = new WebSocket(`wss://${this.api_base}/ws${existingSession}`);
 		this.socket.binaryType = "arraybuffer";
 
         this.socket.addEventListener("open", () => {
@@ -167,7 +158,110 @@ class VtonApi extends EventTarget {
         this.#createSocket();
     }
 
-    async queuePrompt(prompt) {
+    async queuePrompt() {
+		if (window.generating) return;
+
+		if (!window.model) {
+			alert("upload model image");
+		} else if(!window.clothes) {
+			alert("upload cloth image");
+		}
+
+		prompt = {
+			"1": {
+			  "inputs": {
+				"image": window.model.name,
+				"upload": "image"
+			  },
+			  "class_type": "LoadImage",
+			  "_meta": {
+				"title": "Load Image"
+			  }
+			},
+			"3": {
+			  "inputs": {
+				"seed": 552795450883756,
+				"steps": 20,
+				"cfg": 2.0300000000000002,
+				"category": "Upper body",
+				"pipe": [
+				  "10",
+				  0
+				],
+				"cloth_image": [
+				  "4",
+				  0
+				],
+				"model_image": [
+				  "1",
+				  0
+				]
+			  },
+			  "class_type": "OOTDGenerate",
+			  "_meta": {
+				"title": "OOTDiffusion Generate"
+			  }
+			},
+			"4": {
+			  "inputs": {
+				"image": window.clothes.name,
+				"upload": "image"
+			  },
+			  "class_type": "LoadImage",
+			  "_meta": {
+				"title": "Load Image"
+			  }
+			},
+			"5": {
+			  "inputs": {
+				"images": [
+				  "3",
+				  0
+				]
+			  },
+			  "class_type": "PreviewImage",
+			  "_meta": {
+				"title": "Preview Image"
+			  }
+			},
+			"7": {
+			  "inputs": {
+				"images": [
+				  "3",
+				  1
+				]
+			  },
+			  "class_type": "PreviewImage",
+			  "_meta": {
+				"title": "Preview Image"
+			  }
+			},
+			"10": {
+			  "inputs": {
+				"type": "Half body"
+			  },
+			  "class_type": "LoadOOTDPipelineHub",
+			  "_meta": {
+				"title": "Load OOTDiffusion from Hub🤗"
+			  }
+			},
+			"11": {
+			  "inputs": {
+				"filename_prefix": "ComfyUI",
+				"images": [
+				  "3",
+				  0
+				]
+			  },
+			  "class_type": "SaveImage",
+			  "_meta": {
+				"title": "Save Image"
+			  }
+			}
+		}
+
+		window.generating = true;
+
         const body = {
             client_id: this.clientId,
             prompt: prompt,
@@ -182,6 +276,7 @@ class VtonApi extends EventTarget {
         })
 
         if (res.status !== 200) {
+			window.generating = false;
             throw {
                 response: await res.json(),
             }
@@ -190,7 +285,7 @@ class VtonApi extends EventTarget {
         return await res.json();
     } 
 
-    async uploadFile(file) {
+    async uploadFile(file, type) {
         try {
             // Wrap file in formdata so it includes filename
             const body = new FormData();
@@ -206,6 +301,11 @@ class VtonApi extends EventTarget {
                 let path = data.name;
                 if (data.subfolder) path = data.subfoler + "/" + path;
                 console.log("Uploaded File: ", data);
+				if (type === "model") {
+					window.model = data;
+				} else if (type === "clothes") {
+					window.clothes = data;
+				}
             } else {
                 alert(`${resp.status} - ${resp.statusText}`);
             }

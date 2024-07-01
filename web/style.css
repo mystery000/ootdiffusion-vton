@@ -16,7 +16,22 @@ body {
 	width: 100vw;
 	height: 100vh;
 	margin: 0;
+	padding: 12px 36px;
 	overflow: hidden;
 	background-color: var(--bg-color);
 	color: var(--fg-color);
+}
+
+.vton_container {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	margin-top: 24px;
+}
+
+.model_preview, .cloth_preview {
+	border: 1px solid black;
+	padding: 12px;
+	width: 30%;
+	height: 30%;
 }
