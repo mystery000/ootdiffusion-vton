@@ -3,7 +3,7 @@ class VtonApi extends EventTarget {
 
     constructor() {
         super();
-		this.api_base = "9qpg1kcavbsyx5-3000.proxy.runpod.net";
+		this.api_base = "w5qglq6hlu26t9-3000.proxy.runpod.net";
 		this.initialClientId = sessionStorage.getItem("clientId");
     }
 
