@@ -180,7 +180,7 @@ class VtonApi extends EventTarget {
 			},
 			"3": {
 			  "inputs": {
-				"seed": 552795450883756,
+				"seed": 863992698985211,
 				"steps": 20,
 				"cfg": 2.0300000000000002,
 				"category": "Upper body",
